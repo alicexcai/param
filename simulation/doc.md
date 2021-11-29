@@ -1,5 +1,8 @@
 # DOCUMENTATION
 
+### TODO
+* feed data into sqlite database
+
 ### Big Decisions
 Remove all dictionaries and convert standard into single data values? output_probabilities_a, etc.
 

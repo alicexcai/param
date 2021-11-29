@@ -1,22 +1,16 @@
 from .agent import Agent
 
-class Params:
-    
-    def __init__(self,
-                 outcomes=['Y', 'N'],
-                 agents_list=[Agent(1, 'first', 1000)],
-                 mechanism='logarithmic',
-                 liquidity=100.0,
-                 i_shares={'Y': 0.0, 'N': 0.0},
+# Meta-parameters describing the parameters
+class MetaParams:
 
-                 num_rounds=100,
-                 loglevel='info',
-                 num_iterations=1,
-                 ):
-        self.outcomes = outcomes
-        self.agents_list = agents_list
-        self.mechanism = mechanism
-        self.liquidity = liquidity
-        self.i_shares = i_shares
-        self.num_rounds = num_rounds
-        self.num_iterations = num_iterations
+    def __init__(self, params_tested, params_const, results_primary, results_full):
+        self.params_tested = params_tested
+        self.params_const = params_const
+        self.results_primary = results_primary
+        self.results_full = results_full  # full list of outputs
+
+# Parameters for a single run of the experiment
+class Params:
+    def __init__(self, params_all):
+        for param in params_all:
+            self.__dict__[param] = params_all[param]

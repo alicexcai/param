@@ -25,5 +25,5 @@ class Agent:
     
     # Is this necessary?
     def __repr__(self):
-        return "%s(id = %d, name = %d, balance = %d)" % (
+        return "%s(id = %d, name = %s, balance = %d)" % (
             self.__class__.__name__, self.id, self.name, self.balance)
