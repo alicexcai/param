@@ -1,0 +1,26 @@
+2021-11-26 11:27:08,436 pypet.storageservice.HDF5StorageService INFO     I will use the hdf5 file `/Users/alicecai/Desktop/csecon/param/sim/hdf5/trajectory.hdf5`.
+2021-11-26 11:27:08,442 pypet.environment.Environment INFO     Environment initialized.
+2021-11-26 11:27:08,542 pypet.environment.Environment INFO     I am preparing the Trajectory for the experiment and initialise the store.
+2021-11-26 11:27:08,543 pypet.environment.Environment INFO     Initialising the storage for the trajectory.
+2021-11-26 11:27:08,546 pypet.storageservice.HDF5StorageService INFO     Initialising storage or updating meta data of Trajectory `trajectory`.
+2021-11-26 11:27:08,593 pypet.storageservice.HDF5StorageService INFO     Finished init or meta data update for `trajectory`.
+2021-11-26 11:27:08,603 pypet.environment.Environment INFO     
+************************************************************
+STARTING FINAL STORING of trajectory
+`trajectory`
+************************************************************
+
+2021-11-26 11:27:08,607 pypet.storageservice.HDF5StorageService INFO     Start storing Trajectory `trajectory`.
+2021-11-26 11:27:08,714 pypet.storageservice.HDF5StorageService INFO     Storing branch `config`.
+2021-11-26 11:27:09,171 pypet.storageservice.HDF5StorageService INFO     Storing branch `parameters`.
+2021-11-26 11:27:09,227 pypet.storageservice.HDF5StorageService INFO     Finished storing Trajectory `trajectory`.
+2021-11-26 11:27:09,233 pypet.environment.Environment INFO     
+************************************************************
+FINISHED FINAL STORING of trajectory
+`trajectory`.
+************************************************************
+
+2021-11-26 11:27:09,280 pypet.environment.Environment ERROR    Following runs of trajectory `trajectory` did NOT complete: `run_00000000, run_00000001, run_00000002, run_00000003`
+2021-11-26 11:27:09,294 pypet.storageservice.HDF5StorageService INFO     Loading trajectory `trajectory`.
+2021-11-26 11:27:09,294 pypet.storageservice.HDF5StorageService INFO     Loading branch `config` in mode `2`.
+2021-11-26 11:27:09,324 pypet.storageservice.HDF5StorageService INFO     Loading branch `parameters` in mode `2`.

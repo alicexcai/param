@@ -1,0 +1,13 @@
+2021-11-26 10:27:36,468 pypet ERROR    ERROR occurred during a single run! 
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pypet/environment.py", line 259, in _sigint_handling_single_run
+    return _single_run(kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pypet/environment.py", line 314, in _single_run
+    result = runfunc(traj, *runargs, **kwrunparams)
+  File "market_doe.py", line 18, in sim
+    agents_dict = config.agents_dict
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pypet/naturalnaming.py", line 2995, in __getattr__
+    with_links=self.v_root.v_with_links)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pypet/naturalnaming.py", line 2306, in _get
+    str('.'.join(split_name)))
+AttributeError: agents_dict is not part of your trajectory or it's tree. 

@@ -1,0 +1,3 @@
+2021-11-26 11:28:55,989 pypet.storageservice.HDF5StorageService INFO     I will use the hdf5 file `/Users/alicecai/Desktop/csecon/param/sim/hdf5/trajectory.hdf5`.
+2021-11-26 11:28:55,996 pypet.environment.Environment INFO     Environment initialized.
+2021-11-26 11:28:56,031 pypet.naturalnaming.NaturalNamingInterface ERROR    Failed adding `cost` under ``.

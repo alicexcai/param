@@ -1,0 +1,25 @@
+2021-11-26 11:26:29,195 pypet.storageservice.HDF5StorageService INFO     I will use the hdf5 file `/Users/alicecai/Desktop/csecon/param/sim/hdf5/trajectory.hdf5`.
+2021-11-26 11:26:29,201 pypet.environment.Environment INFO     Environment initialized.
+2021-11-26 11:26:29,255 pypet.environment.Environment INFO     I am preparing the Trajectory for the experiment and initialise the store.
+2021-11-26 11:26:29,255 pypet.environment.Environment INFO     Initialising the storage for the trajectory.
+2021-11-26 11:26:29,259 pypet.storageservice.HDF5StorageService INFO     Initialising storage or updating meta data of Trajectory `trajectory`.
+2021-11-26 11:26:29,308 pypet.storageservice.HDF5StorageService INFO     Finished init or meta data update for `trajectory`.
+2021-11-26 11:26:29,315 pypet.environment.Environment INFO     
+************************************************************
+STARTING runs of trajectory
+`trajectory`.
+************************************************************
+
+2021-11-26 11:26:29,315 pypet INFO     PROGRESS: Finished 0/4 runs [                    ]  0.0%
+2021-11-26 11:26:29,316 pypet INFO     
+=========================================
+ Starting single run #0 of 4 
+=========================================
+
+2021-11-26 11:26:29,316 pypet ERROR    ERROR occurred during a single run! 
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pypet/environment.py", line 259, in _sigint_handling_single_run
+    return _single_run(kwargs)
+  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pypet/environment.py", line 314, in _single_run
+    result = runfunc(traj, *runargs, **kwrunparams)
+TypeError: 'float' object is not callable

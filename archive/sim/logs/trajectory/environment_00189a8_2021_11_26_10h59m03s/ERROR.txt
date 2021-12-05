@@ -1,0 +1,1 @@
+2021-11-26 10:59:03,024 pypet.storageservice.HDF5StorageService ERROR    Failed storing `Trajectory trajectory (len:4): (config: <class 'pypet.naturalnaming.ConfigGroup'>), (parameters: <class 'pypet.naturalnaming.ParameterGroup'>)`
