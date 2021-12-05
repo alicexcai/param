@@ -1,0 +1,6 @@
+streamlit==0.86.0
+gwosc==0.5.8
+gwpy==2.0.4
+matplotlib==3.4.2
+astropy==4.0.3
+numpy==1.19.5

@@ -1,0 +1,42 @@
+
+* Add docu about graceful exit  *DONEÜ
+
+* Add docu about no clobber *DONE*
+
+* Add docu about rt2, runtoset *DONE*
+
+* Add docu about new map feature *DONE*
+
+* Write more tests for new map feature *DONE*
+
+* Doc manual runs *DONE*
+
+* Write tests for manual runs *DONE*
+
+* Add examples to docu *DONE*
+
+* Better document examples *DONE*
+
+* Doc new wrapper *DONE*
+
+* Test new wrapper  *DONE*
+
+* more test for copying *DONE*
+
+* Doc new niceness feature  *DONE*
+
+* Doc new scoop feature *DONE*
+
+* Add gc.collect to queue and pipe feature *DONE*
+
+* Document new NETLOCK wrap mode *DONE*
+
+* Create NETQUEUE mode (Mehmet) *DONE*
+
+* Document and test TimeOutLockerServer *DONE*
+
+* Add changes about naming *DONE*
+
+* Doc new naming *DONE*
+
+* Doc Brian changes *DONE*

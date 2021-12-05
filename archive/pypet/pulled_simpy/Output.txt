@@ -1,0 +1,206 @@
+{
+    "0": {
+        "Parameters": {
+            "agent_class_names": [
+                "Truthful",
+                "Truthful",
+                "Truthful",
+                "NANewbb"
+            ],
+            "budget": 500000,
+            "iters": 1,
+            "loglevel": "info",
+            "max_perms": 10,
+            "max_val": 175,
+            "mechanism": "vcg",
+            "min_val": 25,
+            "num_rounds": 3,
+            "reserve": 0,
+            "seed": 1
+        },
+        "Results": {
+            "Agent Stats": {
+                "NANewbb": {
+                    "Average spend": 42.876,
+                    "Average utility": 49.989
+                },
+                "Truthful": {
+                    "Average spend": 58.074,
+                    "Average utility": 105.787
+                }
+            },
+            "Average daily revenue": 246.535,
+            "Stddev daily revenue": 0.0
+        }
+    },
+    "1": {
+        "Parameters": {
+            "agent_class_names": [
+                "Truthful",
+                "Truthful",
+                "Truthful",
+                "NANewbb"
+            ],
+            "budget": 500000,
+            "iters": 1,
+            "loglevel": "info",
+            "max_perms": 10,
+            "max_val": 175,
+            "mechanism": "vcg",
+            "min_val": 25,
+            "num_rounds": 3,
+            "reserve": 0,
+            "seed": 2
+        },
+        "Results": {
+            "Agent Stats": {
+                "NANewbb": {
+                    "Average spend": 41.178000000000004,
+                    "Average utility": 39.668
+                },
+                "Truthful": {
+                    "Average spend": 59.358000000000004,
+                    "Average utility": 65.787
+                }
+            },
+            "Average daily revenue": 205.695,
+            "Stddev daily revenue": 0.0
+        }
+    },
+    "2": {
+        "Parameters": {
+            "agent_class_names": [
+                "Truthful",
+                "Truthful",
+                "Truthful",
+                "NANewbb"
+            ],
+            "budget": 500000,
+            "iters": 1,
+            "loglevel": "info",
+            "max_perms": 10,
+            "max_val": 175,
+            "mechanism": "vcg",
+            "min_val": 25,
+            "num_rounds": 3,
+            "reserve": 10,
+            "seed": 1
+        },
+        "Results": {
+            "Agent Stats": {
+                "NANewbb": {
+                    "Average spend": 42.876,
+                    "Average utility": 49.989
+                },
+                "Truthful": {
+                    "Average spend": 58.074,
+                    "Average utility": 105.787
+                }
+            },
+            "Average daily revenue": 246.535,
+            "Stddev daily revenue": 0.0
+        }
+    },
+    "3": {
+        "Parameters": {
+            "agent_class_names": [
+                "Truthful",
+                "Truthful",
+                "Truthful",
+                "NANewbb"
+            ],
+            "budget": 500000,
+            "iters": 1,
+            "loglevel": "info",
+            "max_perms": 10,
+            "max_val": 175,
+            "mechanism": "vcg",
+            "min_val": 25,
+            "num_rounds": 3,
+            "reserve": 10,
+            "seed": 2
+        },
+        "Results": {
+            "Agent Stats": {
+                "NANewbb": {
+                    "Average spend": 41.178000000000004,
+                    "Average utility": 39.668
+                },
+                "Truthful": {
+                    "Average spend": 59.358000000000004,
+                    "Average utility": 65.787
+                }
+            },
+            "Average daily revenue": 205.695,
+            "Stddev daily revenue": 0.0
+        }
+    },
+    "4": {
+        "Parameters": {
+            "agent_class_names": [
+                "Truthful",
+                "Truthful",
+                "Truthful",
+                "NANewbb"
+            ],
+            "budget": 500000,
+            "iters": 1,
+            "loglevel": "info",
+            "max_perms": 10,
+            "max_val": 175,
+            "mechanism": "vcg",
+            "min_val": 25,
+            "num_rounds": 3,
+            "reserve": 50,
+            "seed": 1
+        },
+        "Results": {
+            "Agent Stats": {
+                "NANewbb": {
+                    "Average spend": 50.265,
+                    "Average utility": 38.55
+                },
+                "Truthful": {
+                    "Average spend": 68.325,
+                    "Average utility": 93.691
+                }
+            },
+            "Average daily revenue": 281.035,
+            "Stddev daily revenue": 0.0
+        }
+    },
+    "5": {
+        "Parameters": {
+            "agent_class_names": [
+                "Truthful",
+                "Truthful",
+                "Truthful",
+                "NANewbb"
+            ],
+            "budget": 500000,
+            "iters": 1,
+            "loglevel": "info",
+            "max_perms": 10,
+            "max_val": 175,
+            "mechanism": "vcg",
+            "min_val": 25,
+            "num_rounds": 3,
+            "reserve": 50,
+            "seed": 2
+        },
+        "Results": {
+            "Agent Stats": {
+                "NANewbb": {
+                    "Average spend": 23.9,
+                    "Average utility": 32.025999999999996
+                },
+                "Truthful": {
+                    "Average spend": 35.85,
+                    "Average utility": 48.039
+                }
+            },
+            "Average daily revenue": 119.5,
+            "Stddev daily revenue": 0.0
+        }
+    }
+}
