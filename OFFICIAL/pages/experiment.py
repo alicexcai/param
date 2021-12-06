@@ -1,244 +1,188 @@
+import collections
+from numpy.core.defchararray import lower
 import streamlit as st
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import plotly.express as px
+import pandas as pd
+import sqlite3
+# import utils
+import importlib
+import os
 
-import requests, os
-from gwpy.timeseries import TimeSeries
-from gwosc.locate import get_urls
-from gwosc import datasets
-from gwosc.api import fetch_event_json
-
-from copy import deepcopy
-import base64
-
-import matplotlib as mpl
-mpl.use("agg")
-from matplotlib.backends.backend_agg import RendererAgg
-_lock = RendererAgg.lock
+# TEMPORARY ################################################################################################################
+# from .components.params import MetaParams
+from doepy import build
+import sys
+########################################################################################################################
 
 
-# -- Set page config
-apptitle = 'GW Quickview'
-
-st.set_page_config(page_title=apptitle, page_icon=":eyeglasses:")
-
-# -- Default detector list
-detectorlist = ['H1','L1', 'V1']
-
-# Title the app
-st.title('Prediction Market Simulation')
-
-st.markdown("""
- Visualize your data by changing the parameters in the sidebar.
-""")
-
-@st.cache(ttl=3600, max_entries=10)   #-- Magic command to cache data
-def load_gw(t0, detector, fs=4096):
-    strain = TimeSeries.fetch_open_data(detector, t0-14, t0+14, sample_rate = fs, cache=False)
-    return strain
-
-@st.cache(ttl=3600, max_entries=10)   #-- Magic command to cache data
-def get_eventlist():
-    allevents = datasets.find_datasets(type='events')
-    eventset = set()
-    for ev in allevents:
-        name = fetch_event_json(ev)['events'][ev]['commonName']
-        if name[0:2] == 'GW':
-            eventset.add(name)
-    eventlist = list(eventset)
-    eventlist.sort()
-    return eventlist
+def app():
+    st.subheader("Run Experiment")
+    # st.markdown("#### Parameter exploration. Data management. Statistical analysis.") 
+        
+    dirname = st.sidebar.text_input("Enter your data directory path:", os.path.dirname(__file__))
+    # dirname = os.path.join(os.path.dirname(__file__), '../data')
+    local_files_list = [file for file in os.listdir(dirname) if file.endswith('.py') and not file.startswith('.')] # Ignore hidden files
     
-st.sidebar.markdown("## Select Visualization Parameters")
+    with st.sidebar.expander("See data in current directory"):
+        st.write(local_files_list)
+        
+    selected_function = st.selectbox('Select Datasets', local_files_list)
+    function_file = os.path.join(dirname, selected_function)
+    # st.write(selected_function)
+        
+    uploaded_file = st.file_uploader("Choose a file", type = ['py'])
+    with st.expander("See file code "):
+        
+        st.code(open(function_file).read())
+        if uploaded_file is not None:
+            uploaded_file_contents = uploaded_file.read().decode("utf-8") 
+            st.code(uploaded_file_contents)
+        # with uploaded_file as f:
+        #     # block = str(f.read())
+        #     # st.markdown(str(block))
+        #     st.code(f.read())
+        
+    # with st.echo():
+    #     st.write('This code will be printed')
+    #     eval(uploaded_file)
 
-# -- Get list of events
-eventlist = get_eventlist()
+    # Code to read a single file 
 
-#-- Set time by GPS or event
-select_event = st.sidebar.selectbox('Data type',
-                                    ['Aggregate Experiment Statistics', 'Individual Run Data'])
-# select_file = st.sidebar.selectbox('Data file',
-#                                     ['Aggregate Experiment Statistics', 'Individual Run Data'])
-uploaded_file = st.file_uploader("Choose a file")
-if uploaded_file is not None:
-    dataframe = pd.read_csv(uploaded_file)
-    st.write(dataframe)
-    # st.dataframe(dataframe)
-
-if select_event == 'Individual Run Data':
-    # -- Set a GPS time:        
-    str_t0 = st.sidebar.text_input('GPS Time', '1126259462.4')    # -- GW150914
-    t0 = float(str_t0)
-
-    st.sidebar.markdown("""
-    hi
-    """)
-
-else:
-    chosen_event = st.sidebar.selectbox('Select Event', eventlist)
-    t0 = datasets.event_gps(chosen_event)
-    detectorlist = list(datasets.event_detectors(chosen_event))
-    detectorlist.sort()
-    # st.subheader(chosen_event)
-    # st.write('GPS:', t0)
+    # global data
+    # if uploaded_file is not None:
+    #     if uploaded_file.filename.endswith('.sqlite'):
+    #         # data = pd.DataFrame(pd.read_sql_query('SELECT * FROM data', uploaded_file))
+    #         conn = sqlite3.connect(uploaded_file)
+    #         data = pd.read_sql_query("SELECT * FROM table_name", conn)
+    #     try:
+    #         data = pd.read_csv(uploaded_file)
+    #     except Exception as e:
+    #         print(e)
+    #         data = pd.read_excel(uploaded_file)
     
-    # -- Experiment to display masses
-    # try:
-    #     jsoninfo = fetch_event_json(chosen_event)
-    #     for name, nameinfo in jsoninfo['events'].items():        
-    #         st.write('Mass 1:', nameinfo['mass_1_source'], 'M$_{\odot}$')
-    #         st.write('Mass 2:', nameinfo['mass_2_source'], 'M$_{\odot}$')
-    #         st.write('Network SNR:', int(nameinfo['network_matched_filter_snr']))
-    #         eventurl = 'https://gw-osc.org/eventapi/html/event/{}'.format(chosen_event)
-    #         st.markdown('Event page: {}'.format(eventurl))
-    #         st.write('\n')
-    # except:
-    #     pass
-
-    
-#-- Choose detector as H1, L1, or V1
-detector = st.sidebar.selectbox('Detector', detectorlist)
-
-# -- Select for high sample rate data
-fs = 4096
-maxband = 2000
-high_fs = st.sidebar.checkbox('Full sample rate data')
-if high_fs:
-    fs = 16384
-    maxband = 8000
+    params_tested = build.full_fact(
+    {'liquidity': [100.0, 200.0],
+    'num_rounds': [60.0, 120.0]}
+    )
+    params_const = {
+        'outcomes': ['Harvard', 'Yale'],
+        'agents_list': ['Nerd(1, \'first\', 1000)', 'Nerd(2, \'second\', 1000)', 'Nerd(3, \'third\', 1000)'],
+        'mechanism': 'logarithmic',
+        'i_shares': {'Harvard': 0.0, 'Yale': 0.0 },
+                    }
+    # meta_params = MetaParams(
+    #     params_tested=['liquidity', 'num_rounds'],
+    #     params_const=['outcomes', 'agents_list', 'mechanism', 'i_shares'],
+    #     results_primary=['cost', 'probability_Harvard', 'probability_Yale', 'shares_Harvard', 'shares_Yale'],
+    #     results_full=['cost', 'probabilities', 'shares', 'p_shares', 'payments']
+    # )
 
 
-# -- Create sidebar for plot controls
-st.sidebar.markdown('## Set Plot Parameters')
-dtboth = st.sidebar.slider('Time Range (seconds)', 0.1, 8.0, 1.0)  # min, max, default
-dt = dtboth / 2.0
+    ''' Load the data and save the columns with categories as a dataframe. 
+    This section also allows changes in the numerical and categorical columns. '''
+    if st.button("Run Exploration"):
+        
+        # moduleNames = ['sys', 'os', 're', 'unittest', uploaded_file.name] 
+        # modules = map(__import__, moduleNames)
+        
+        st.write("The automatic import of the uploaded / specified file is not working. Feature to be developed.")
+        
+        # st.write(selected_function[0:-3])
+ 
+        import importlib
+        # st.write("successful importlib import")
+        # st.write(selected_function[0:-3], type(selected_function[0:-3]))
+        mymodule = importlib.import_module(str(selected_function[0:-3]))
+        st.write(type(mymodule))
+        my_function = getattr(mymodule, 'main')
+        
+        st.write(type(my_function))
+        
+        # my_function = getattr(__import__(selected_function[0:-3]), 'main')
+        
+        # import importlib
+        # def import_from(module, name):
+        #     module = __import__(module, fromlist=[name])
+        #     return getattr(module, name)
 
-st.sidebar.markdown('#### Simulation')
-whiten = st.sidebar.checkbox('Whiten?', value=True)
-freqrange = st.sidebar.slider('Band-pass frequency range (Hz)', min_value=10, max_value=maxband, value=(30,400))
+        experiment_name = "Test"
+        # db = sqlite3.connect("%s.sqlite"%experiment_name)
+        # cursor = db.cursor()
+        # import_from(selected_function[0:-3], "main")
+        
+        # eval(f'import {a}')
+        # eval(f'{a}.{b}')
+        
+        my_function(experiment_name, params_tested, params_const, meta_params)
+        
+        
+        # to_run = importlib.import_module(uploaded_file.name)
+        # to_run.doe(params_tested, params_const, meta_params)
+        st.write("Exploration complete.")
+        
+        
+        # eval(uploaded_file.name)
+        
+        # to_run = importlib.import_module(uploaded_file.name)
+        # to_run(params_tested, params_const, meta_params)
+        
+        
+        # from contextlib import contextmanager, redirect_stdout
+        # from io import StringIO
+        # from time import sleep
 
+        # @contextmanager
+        # def st_capture(output_func):
+        #     with StringIO() as stdout, redirect_stdout(stdout):
+        #         old_write = stdout.write
 
-# -- Create sidebar for Q-transform controls
-st.sidebar.markdown('#### Q-tranform plot')
-vmax = st.sidebar.slider('Colorbar Max Energy', 10, 500, 25)  # min, max, default
-qcenter = st.sidebar.slider('Q-value', 5, 120, 5)  # min, max, default
-qrange = (int(qcenter*0.8), int(qcenter*1.2))
-
-#-- Create a text element and let the reader know the data is loading.
-strain_load_state = st.text('Loading data...this may take a minute')
-try:
-    strain_data = load_gw(t0, detector, fs)
-except:
-    st.warning('{0} data are not available for time {1}.  Please try a different time and detector pair.'.format(detector, t0))
-    st.stop()
-    
-strain_load_state.text('Loading data...done!')
-
-#-- Make a time series plot
-
-cropstart = t0-0.2
-cropend   = t0+0.1
-
-cropstart = t0 - dt
-cropend   = t0 + dt
-
-testfig = px.scatter(
-    x=dataframe["round_num"],
-    y=dataframe["cost"],
-)
-
-st.subheader('Round Data - Probabilities vs. Time (min)')
-st.write(testfig)
-# st.pyplot(dataframe['Harvard', 'Yale'].plot(figsize=(12,4), color='k', linewidth=0.5))
-center = int(t0)
-strain = deepcopy(strain_data)
-
-with _lock:
-    fig1 = strain.crop(cropstart, cropend).plot()
-    #fig1 = cropped.plot()
-    st.pyplot(fig1, clear_figure=True)
-
-
-# -- Try whitened and band-passed plot
-# -- Whiten and bandpass data
-st.subheader('Round Data - Cost vs. Time (min)')
-
-if whiten:
-    white_data = strain.whiten()
-    bp_data = white_data.bandpass(freqrange[0], freqrange[1])
-else:
-    bp_data = strain.bandpass(freqrange[0], freqrange[1])
-
-bp_cropped = bp_data.crop(cropstart, cropend)
-
-with _lock:
-    fig3 = bp_cropped.plot()
-    st.pyplot(fig3, clear_figure=True)
-    
-st.subheader('Round Data - Shares vs. Time (min)')
-
-# -- Allow data download
-download = {'Time':bp_cropped.times, 'Strain':bp_cropped.value}
-df = pd.DataFrame(download)
-csv = df.to_csv(index=False)
-b64 = base64.b64encode(csv.encode()).decode()  # some strings <-> bytes conversions necessary here
-fn =  detector + '-STRAIN' + '-' + str(int(cropstart)) + '-' + str(int(cropend-cropstart)) + '.csv'
-href = f'<a href="data:file/csv;base64,{b64}" download="{fn}">Download Data as CSV File</a>'
-st.markdown(href, unsafe_allow_html=True)
-
-# -- Make audio file
-# st.audio(make_audio_file(bp_cropped), format='audio/wav')
-
-# -- Notes on whitening
-with st.expander("See notes"):
-    st.markdown("""
- * Whitening is a process that re-weights a signal, so that all frequency bins have a nearly equal amount of noise. 
- * A band-pass filter uses both a low frequency cutoff and a high frequency cutoff, and only passes signals in the frequency band between these values.
-
-See also:
- * [Signal Processing Tutorial](https://share.streamlit.io/jkanner/streamlit-audio/main/app.py)
-""")
+        #         def new_write(string):
+        #             ret = old_write(string)
+        #             output_func(stdout.getvalue())
+        #             return ret
+                
+        #         stdout.write = new_write
+        #         yield
 
 
-st.subheader('Q-transform')
+        # output = st.empty()
+        # with st_capture(output.code):
+        #     print("Hello")
+        #     eval("python3 doe.py")
 
-hq = strain.q_transform(outseg=(t0-dt, t0+dt), qrange=qrange)
+        # output = st.empty()
+        # with st_capture(output.info):
+        #     print("Goodbye")
+        
+            
+            
+            
+            
+            
+            
+            
+        
+        # Raw data 
+        # st.dataframe(data)
+        # data.to_csv('data/main_data.csv', index=False)
 
-with _lock:
-    fig4 = hq.plot()
-    ax = fig4.gca()
-    fig4.colorbar(label="Normalised energy", vmax=vmax, vmin=0)
-    ax.grid(False)
-    ax.set_yscale('log')
-    ax.set_ylim(bottom=15)
-    st.pyplot(fig4, clear_figure=True)
+        # # Collect the categorical and numerical columns 
+        
+        # numeric_cols = data.select_dtypes(include=np.number).columns.tolist()
+        # categorical_cols = list(set(list(data.columns)) - set(numeric_cols))
+        
+        # # Save the columns as a dataframe or dictionary
+        # columns = []
 
+        # # Iterate through the numerical and categorical columns and save in columns 
+        # # columns = utils.genMetaData(data) 
+        
+        # # Save the columns as a dataframe with categories
+        # # Here column_name is the name of the field and the type is whether it's numerical or categorical
+        # columns_df = pd.DataFrame(columns, columns = ['column_name', 'type'])
+        # columns_df.to_csv('data/metadata/column_type_desc.csv', index = False)
 
-with st.expander("See notes"):
-
-    st.markdown("""
-A Q-transform plot shows how a signal’s frequency changes with time.
-
- * The x-axis shows time
- * The y-axis shows frequency
-
-The color scale shows the amount of “energy” or “signal power” in each time-frequency pixel.
-
-A parameter called “Q” refers to the quality factor.  A higher quality factor corresponds to a larger number of cycles in each time-frequency pixel.  
-
-For gravitational-wave signals, binary black holes are most clear with lower Q values (Q = 5-20), where binary neutron star mergers work better with higher Q values (Q = 80 - 120).
-
-See also:
-
- * [GWpy q-transform](https://gwpy.github.io/docs/stable/examples/timeseries/qscan.html)
- * [Reading Time-frequency plots](https://labcit.ligo.caltech.edu/~jkanner/aapt/web/math.html#tfplot)
- * [Shourov Chatterji PhD Thesis](https://dspace.mit.edu/handle/1721.1/34388)
-""")
-
-
-st.subheader("About this app")
-st.markdown("""
-This app runs a prediction market simulation from user-inputted parameter ranges. The full simulation and DOE package can be found at [here](github.com/alicexcai/param).
-""")
+        # # Display columns 
+        # st.markdown("**Column Name**-**Type**")
+        # for i in range(columns_df.shape[0]):
+        #     st.write(f"{i+1}. **{columns_df.iloc[i]['column_name']}** - {columns_df.iloc[i]['type']}")

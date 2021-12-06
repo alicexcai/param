@@ -1,6 +1,0 @@
-2021-11-26 10:59:37,494 pypet.storageservice.HDF5StorageService INFO     I will use the hdf5 file `/Users/alicecai/Desktop/csecon/param/sim/hdf5/trajectory.hdf5`.
-2021-11-26 10:59:37,499 pypet.environment.Environment INFO     Environment initialized.
-2021-11-26 10:59:37,500 pypet.environment.Environment INFO     I am preparing the Trajectory for the experiment and initialise the store.
-2021-11-26 10:59:37,500 pypet.environment.Environment INFO     Initialising the storage for the trajectory.
-2021-11-26 10:59:37,504 pypet.storageservice.HDF5StorageService INFO     Initialising storage or updating meta data of Trajectory `trajectory`.
-2021-11-26 10:59:37,504 pypet.storageservice.HDF5StorageService ERROR    Failed storing `Trajectory trajectory (len:4): (config: <class 'pypet.naturalnaming.ConfigGroup'>), (parameters: <class 'pypet.naturalnaming.ParameterGroup'>)`

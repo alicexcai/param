@@ -1,7 +1,17 @@
+import collections
+from numpy.core.defchararray import lower
+import streamlit as st
+import numpy as np
+import pandas as pd
+import sqlite3
+
+# ^ imports from testpage
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import plotly.express as px
 
 import requests, os
 from gwpy.timeseries import TimeSeries
@@ -12,230 +22,130 @@ from gwosc.api import fetch_event_json
 from copy import deepcopy
 import base64
 
-# from helper import make_audio_file
-
-# Use the non-interactive Agg backend, which is recommended as a
-# thread-safe backend.
-# See https://matplotlib.org/3.3.2/faq/howto_faq.html#working-with-threads.
 import matplotlib as mpl
 mpl.use("agg")
-
-##############################################################################
-# Workaround for the limited multi-threading support in matplotlib.
-# Per the docs, we will avoid using `matplotlib.pyplot` for figures:
-# https://matplotlib.org/3.3.2/faq/howto_faq.html#how-to-use-matplotlib-in-a-web-application-server.
-# Moreover, we will guard all operations on the figure instances by the
-# class-level lock in the Agg backend.
-##############################################################################
 from matplotlib.backends.backend_agg import RendererAgg
 _lock = RendererAgg.lock
 
 
-# -- Set page config
-apptitle = 'GW Quickview'
-
-st.set_page_config(page_title=apptitle, page_icon=":eyeglasses:")
-
-# -- Default detector list
-detectorlist = ['H1','L1', 'V1']
-
-# Title the app
-st.title('Prediction Market Simulation')
-
-st.markdown("""
- Visualize your data by changing the parameters in the sidebar.
-""")
-
-@st.cache(ttl=3600, max_entries=10)   #-- Magic command to cache data
-def load_gw(t0, detector, fs=4096):
-    strain = TimeSeries.fetch_open_data(detector, t0-14, t0+14, sample_rate = fs, cache=False)
-    return strain
-
-@st.cache(ttl=3600, max_entries=10)   #-- Magic command to cache data
-def get_eventlist():
-    allevents = datasets.find_datasets(type='events')
-    eventset = set()
-    for ev in allevents:
-        name = fetch_event_json(ev)['events'][ev]['commonName']
-        if name[0:2] == 'GW':
-            eventset.add(name)
-    eventlist = list(eventset)
-    eventlist.sort()
-    return eventlist
+def app():
     
-st.sidebar.markdown("## Select Parameter Ranges")
+    dirname = st.sidebar.text_input("Enter your data directory path:", os.path.dirname(__file__))
+    # dirname = os.path.join(os.path.dirname(__file__), '../data')
+    local_files_list = [file for file in os.listdir(dirname) if file.endswith('.csv') and not file.startswith('.')] # Ignore hidden files
+    
+    with st.sidebar.expander("See data in current directory"):
+        st.write(local_files_list)
+    
+    # st.sidebar.markdown("## Select Datasets")
+    # selected_dataset = st.sidebar.multiselect('Select Datasets', local_files_list)
+    # uploaded_file = st.sidebar.file_uploader("Upload a file")
+    uploaded_file = st.sidebar.file_uploader("Upload data", type = ['csv', 'xlsx', 'sqlite', 'db'])
+    # if uploaded_file is not None:
+    #     if uploaded_file.name.endswith('.sqlite'):
+    #         dataframe = pd.DataFrame(pd.read_sql_query('SELECT * FROM data', uploaded_file))
+    #         # conn = sqlite3.connect(uploaded_file)
+    #         # data = pd.read_sql_query("SELECT * FROM table_name", conn)
+    #     try:
+    #         dataframe = pd.read_csv(uploaded_file)
+    #     except Exception as e:
+    #         print(e)
+    #         dataframe = pd.read_excel(uploaded_file)
+    st.sidebar.markdown("## Select Visualization Parameters")
 
-# -- Get list of events
-eventlist = get_eventlist()
+    num_graphs = st.sidebar.slider('Number of graphs', 1, 10, 1)  # min, max, default
 
-#-- Set time by GPS or event
-select_event = st.sidebar.selectbox('How do you want to find data?',
-                                    ['By event name', 'By GPS'])
+    # Title the app
+    st.subheader('Data Visualizer')
+    # st.markdown("""Visualize your data by changing the parameters in the sidebar.""")
+    
+    # dataframe = pd.DataFrame(np.random.default_rng(seed=42).random((3, 3)), columns = ['Column_A','Column_B','Column_C'])
+    # if uploaded_file is not None:
+    #     dataframe = pd.read_csv(uploaded_file)
+    #     st.subheader("Raw Data")
+    #     st.write(dataframe)
 
-if select_event == 'By GPS':
-    # -- Set a GPS time:        
-    str_t0 = st.sidebar.text_input('GPS Time', '1126259462.4')    # -- GW150914
-    t0 = float(str_t0)
+    # parameter_list = dataframe.columns.tolist()
 
-    st.sidebar.markdown("""
-    A list:
-    * 1126259462.4    (GW150914) 
+    def graph_data(graph_key):
+        
+        selected_dataset = st.selectbox('Select Datasets', local_files_list + [uploaded_file.name] if uploaded_file is not None else local_files_list, index=0)
+        if uploaded_file is not None and selected_dataset == uploaded_file.name:
+            dataframe = pd.read_csv(uploaded_file)
+        else:
+            dataframe = pd.read_csv(dirname + "/" + selected_dataset)
+        
+        # dataframe = pd.read_csv(dirname + "/" + selected_dataset)
+        st.subheader("Raw Data")
+        with st.expander("See raw data"):
+            st.write(dataframe)
+        parameter_list = dataframe.columns.tolist()
+        
+        with st.expander("See graph parameters"):
+            graph_title = st.text_input("Enter your graph title:", "Graph Title", key=graph_key)
+            col1, col2 = st.columns(2)
+
+            graph_xdata = col1.selectbox('X Data', parameter_list, key=graph_key)
+            graph_ydata = col2.multiselect('Y Data', parameter_list, key=graph_key)
+
+            # st.subheader("Datatype: ", dataframe[graph1_ydata].dtype)
+            regression = st.checkbox('Regression', value=True)
+            if regression == True:
+                regression_type = st.selectbox('Regression Type', 
+                    ['Ordinary Least Squares', 
+                    'Locally WEighted Scatterplot Smoothing',
+                    'Moving Averages: Rolling',
+                    'Moving Averages: Exponential',
+                    'Moving Averages: Expanding'])
+        
+        # Types of regressions: https://plotly.com/python/linear-fits/   
+        regression_options = {
+            'Ordinary Least Squares': ['ols', None], 
+            'Locally WEighted Scatterplot Smoothing': ['lowess', dict(frac=0.1)], 
+            'Moving Averages: Rolling': ['rolling', dict(window=5)],
+            'Moving Averages: Exponential': ['ewm', dict(halflife=2)],
+            'Moving Averages: Expanding': ['expanding', None],
+            }
+        
+        graph_fig = px.scatter(
+            dataframe,
+            x=graph_xdata,
+            y=graph_ydata,
+            trendline= None if regression != True else regression_options[regression_type][0],
+            trendline_options= None if regression != True else regression_options[regression_type][1],
+        )
+        
+        st.subheader(graph_title)
+        st.write(graph_fig)
+
+    for i in range(num_graphs):
+        graph_data(i)
+
+
+
+
+
+    with st.expander("See notes"):
+
+        st.markdown("""
+    About the example data:                
+
+    This work examines the effects of different agent types on prediction market outcomes and effects of prediction market environments on agent utilities.
+
+    Agent types:
+    - Random
+    - Biased
+    - Analytic
+    - Myopic
+
+    Key questions:
+    * How do different agent types affect prediction market outcomes?
+    * How do different prediction market environments affect payoffs for different agent types?
+    
     """)
 
-else:
-    chosen_event = st.sidebar.selectbox('Select Event', eventlist)
-    t0 = datasets.event_gps(chosen_event)
-    detectorlist = list(datasets.event_detectors(chosen_event))
-    detectorlist.sort()
-    st.subheader(chosen_event)
-    st.write('GPS:', t0)
-    
-    # -- Experiment to display masses
-    try:
-        jsoninfo = fetch_event_json(chosen_event)
-        for name, nameinfo in jsoninfo['events'].items():        
-            st.write('Mass 1:', nameinfo['mass_1_source'], 'M$_{\odot}$')
-            st.write('Mass 2:', nameinfo['mass_2_source'], 'M$_{\odot}$')
-            st.write('Network SNR:', int(nameinfo['network_matched_filter_snr']))
-            eventurl = 'https://gw-osc.org/eventapi/html/event/{}'.format(chosen_event)
-            st.markdown('Event page: {}'.format(eventurl))
-            st.write('\n')
-    except:
-        pass
 
-    
-#-- Choose detector as H1, L1, or V1
-detector = st.sidebar.selectbox('Detector', detectorlist)
-
-# -- Select for high sample rate data
-fs = 4096
-maxband = 2000
-high_fs = st.sidebar.checkbox('Full sample rate data')
-if high_fs:
-    fs = 16384
-    maxband = 8000
-
-
-# -- Create sidebar for plot controls
-st.sidebar.markdown('## Set Plot Parameters')
-dtboth = st.sidebar.slider('Time Range (seconds)', 0.1, 8.0, 1.0)  # min, max, default
-dt = dtboth / 2.0
-
-st.sidebar.markdown('#### Whitened and band-passed data')
-whiten = st.sidebar.checkbox('Whiten?', value=True)
-freqrange = st.sidebar.slider('Band-pass frequency range (Hz)', min_value=10, max_value=maxband, value=(30,400))
-
-
-# -- Create sidebar for Q-transform controls
-st.sidebar.markdown('#### Q-tranform plot')
-vmax = st.sidebar.slider('Colorbar Max Energy', 10, 500, 25)  # min, max, default
-qcenter = st.sidebar.slider('Q-value', 5, 120, 5)  # min, max, default
-qrange = (int(qcenter*0.8), int(qcenter*1.2))
-
-#-- Create a text element and let the reader know the data is loading.
-strain_load_state = st.text('Loading data...this may take a minute')
-try:
-    strain_data = load_gw(t0, detector, fs)
-except:
-    st.warning('{0} data are not available for time {1}.  Please try a different time and detector pair.'.format(detector, t0))
-    st.stop()
-    
-strain_load_state.text('Loading data...done!')
-
-#-- Make a time series plot
-
-cropstart = t0-0.2
-cropend   = t0+0.1
-
-cropstart = t0 - dt
-cropend   = t0 + dt
-
-st.subheader('Raw data')
-center = int(t0)
-strain = deepcopy(strain_data)
-
-with _lock:
-    fig1 = strain.crop(cropstart, cropend).plot()
-    #fig1 = cropped.plot()
-    st.pyplot(fig1, clear_figure=True)
-
-
-# -- Try whitened and band-passed plot
-# -- Whiten and bandpass data
-st.subheader('Whitened and Band-passed Data')
-
-if whiten:
-    white_data = strain.whiten()
-    bp_data = white_data.bandpass(freqrange[0], freqrange[1])
-else:
-    bp_data = strain.bandpass(freqrange[0], freqrange[1])
-
-bp_cropped = bp_data.crop(cropstart, cropend)
-
-with _lock:
-    fig3 = bp_cropped.plot()
-    st.pyplot(fig3, clear_figure=True)
-
-# -- Allow data download
-download = {'Time':bp_cropped.times, 'Strain':bp_cropped.value}
-df = pd.DataFrame(download)
-csv = df.to_csv(index=False)
-b64 = base64.b64encode(csv.encode()).decode()  # some strings <-> bytes conversions necessary here
-fn =  detector + '-STRAIN' + '-' + str(int(cropstart)) + '-' + str(int(cropend-cropstart)) + '.csv'
-href = f'<a href="data:file/csv;base64,{b64}" download="{fn}">Download Data as CSV File</a>'
-st.markdown(href, unsafe_allow_html=True)
-
-# -- Make audio file
-# st.audio(make_audio_file(bp_cropped), format='audio/wav')
-
-# -- Notes on whitening
-with st.expander("See notes"):
+    st.subheader("About this app")
     st.markdown("""
- * Whitening is a process that re-weights a signal, so that all frequency bins have a nearly equal amount of noise. 
- * A band-pass filter uses both a low frequency cutoff and a high frequency cutoff, and only passes signals in the frequency band between these values.
-
-See also:
- * [Signal Processing Tutorial](https://share.streamlit.io/jkanner/streamlit-audio/main/app.py)
-""")
-
-
-st.subheader('Q-transform')
-
-hq = strain.q_transform(outseg=(t0-dt, t0+dt), qrange=qrange)
-
-with _lock:
-    fig4 = hq.plot()
-    ax = fig4.gca()
-    fig4.colorbar(label="Normalised energy", vmax=vmax, vmin=0)
-    ax.grid(False)
-    ax.set_yscale('log')
-    ax.set_ylim(bottom=15)
-    st.pyplot(fig4, clear_figure=True)
-
-
-with st.expander("See notes"):
-
-    st.markdown("""
-A Q-transform plot shows how a signal’s frequency changes with time.
-
- * The x-axis shows time
- * The y-axis shows frequency
-
-The color scale shows the amount of “energy” or “signal power” in each time-frequency pixel.
-
-A parameter called “Q” refers to the quality factor.  A higher quality factor corresponds to a larger number of cycles in each time-frequency pixel.  
-
-For gravitational-wave signals, binary black holes are most clear with lower Q values (Q = 5-20), where binary neutron star mergers work better with higher Q values (Q = 80 - 120).
-
-See also:
-
- * [GWpy q-transform](https://gwpy.github.io/docs/stable/examples/timeseries/qscan.html)
- * [Reading Time-frequency plots](https://labcit.ligo.caltech.edu/~jkanner/aapt/web/math.html#tfplot)
- * [Shourov Chatterji PhD Thesis](https://dspace.mit.edu/handle/1721.1/34388)
-""")
-
-
-st.subheader("About this app")
-st.markdown("""
-This app runs a prediction market simulation from user-inputted parameter ranges. The full simulation and DOE package can be found at [here](github.com/alicexcai/param).
-""")
+    This app allows users to easily visualize and analyze statistics for their data.
+    """)

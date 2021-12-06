@@ -1,7 +1,0 @@
-2021-11-26 11:20:03,139 pypet ERROR    ERROR occurred during a single run! 
-Traceback (most recent call last):
-  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pypet/environment.py", line 259, in _sigint_handling_single_run
-    return _single_run(kwargs)
-  File "/Library/Frameworks/Python.framework/Versions/3.7/lib/python3.7/site-packages/pypet/environment.py", line 314, in _single_run
-    result = runfunc(traj, *runargs, **kwrunparams)
-TypeError: 'History' object is not callable

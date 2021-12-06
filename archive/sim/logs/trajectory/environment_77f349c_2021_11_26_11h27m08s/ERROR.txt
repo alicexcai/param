@@ -1,1 +1,0 @@
-2021-11-26 11:27:09,280 pypet.environment.Environment ERROR    Following runs of trajectory `trajectory` did NOT complete: `run_00000000, run_00000001, run_00000002, run_00000003`

@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 from components.history import History
-from components.stats import Stats
+# from components.stats import Stats
 from components.params import MetaParams, Params
 from components.agent import Agent, ZeroInt, Basic, Superfan, Nerd
 

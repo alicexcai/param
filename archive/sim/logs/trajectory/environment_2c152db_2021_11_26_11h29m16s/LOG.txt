@@ -1,3 +1,0 @@
-2021-11-26 11:29:16,825 pypet.storageservice.HDF5StorageService INFO     I will use the hdf5 file `/Users/alicecai/Desktop/csecon/param/sim/hdf5/trajectory.hdf5`.
-2021-11-26 11:29:16,831 pypet.environment.Environment INFO     Environment initialized.
-2021-11-26 11:29:16,924 pypet.naturalnaming.NaturalNamingInterface ERROR    Failed adding `shares` under ``.

@@ -1,5 +1,5 @@
-from collections import defaultdict
-import itertools
+# from collections import defaultdict
+# import itertools
 import pandas as pd
 import market as tosim
 from components.params import MetaParams, Params
@@ -9,6 +9,7 @@ from doepy import build
 import sqlite3
 
 experiment_name = input("Enter Experiment Name: ")
+# experiment_name = "Test"
 
 db = sqlite3.connect("%s.sqlite"%experiment_name)
 cursor = db.cursor()
@@ -31,7 +32,10 @@ meta_params = MetaParams(
     results_full=['cost', 'probabilities', 'shares', 'p_shares', 'payments']
 )
 
-def doe(params_tested, params_const, meta_params):
+def main(experiment_name, params_tested, params_const, meta_params):
+    
+    db = sqlite3.connect("%s.sqlite"%experiment_name)
+    cursor = db.cursor()
     
     experiment_data = pd.DataFrame(columns=meta_params.params_const + meta_params.params_tested + meta_params.results_primary + ['results_full'])
     
@@ -85,7 +89,7 @@ def doe(params_tested, params_const, meta_params):
     print(experiment_data_str)
     print(experiment_data_str.dtypes)
         
-    print("\n\n\nERROR\n\n\n", experiment_data)
+    # print("\n\n\nERROR\n\n\n", experiment_data)
     experiment_data.to_csv('%s.csv'%experiment_name) 
     experiment_data_str.to_sql('experiment_data', con=db, if_exists='replace')
     cursor.execute(
@@ -108,4 +112,4 @@ def doe(params_tested, params_const, meta_params):
     cursor.execute("""DROP TABLE IF EXISTS experiment_data""")
     cursor.execute("""DROP TABLE IF EXISTS run_data""")
 
-doe(params_tested, params_const, meta_params)
+# main(params_tested, params_const, meta_params)

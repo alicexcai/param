@@ -4,18 +4,15 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import sqlite3
-import utils
+# import utils
 
 
 def app():
-    st.markdown("## Data Upload")
-
-    # Upload the dataset and save as csv
-    st.markdown("### Upload a csv file for analysis.") 
-    st.write("\n")
+    st.subheader("Run Experiment")
+    # st.markdown("#### Parameter exploration. Data management. Statistical analysis.") 
 
     # Code to read a single file 
-    uploaded_file = st.file_uploader("Choose a file", type = ['csv', 'xlsx', 'sqlite', 'db'])
+    uploaded_file = st.file_uploader("Choose your experiment file", type = ['csv', 'xlsx', 'sqlite', 'db'])
     global data
     if uploaded_file is not None:
         if uploaded_file.filename.endswith('.sqlite'):
@@ -31,7 +28,7 @@ def app():
 
     ''' Load the data and save the columns with categories as a dataframe. 
     This section also allows changes in the numerical and categorical columns. '''
-    if st.button("Load Data"):
+    if st.button("Run Experiment"):
         
         # Raw data 
         st.dataframe(data)
@@ -46,7 +43,7 @@ def app():
         columns = []
 
         # Iterate through the numerical and categorical columns and save in columns 
-        columns = utils.genMetaData(data) 
+        # columns = utils.genMetaData(data) 
         
         # Save the columns as a dataframe with categories
         # Here column_name is the name of the field and the type is whether it's numerical or categorical
